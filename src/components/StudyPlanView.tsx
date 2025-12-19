@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE } from '../config';
 
@@ -44,23 +44,7 @@ const StudyPlanView: React.FC = () => {
   const [lastHint, setLastHint] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Check screen size for responsive design
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
-    fetchPlan();
-  }, []);
-
-  const fetchPlan = async () => {
+  const fetchPlan = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -120,44 +104,9 @@ const StudyPlanView: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
-  // Timer logic
-  useEffect(() => {
-    if (!isRunning || remainingSeconds <= 0) return;
-
-    const interval = setInterval(() => {
-      setRemainingSeconds((s) => Math.max(0, s - 1));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isRunning, remainingSeconds]);
-
-  useEffect(() => {
-    if (remainingSeconds === 0 && activeId && planData) {
-      setIsRunning(false);
-      const taskIndex = parseInt(activeId.split('-')[0]);
-      saveProgress(taskIndex, true);
-      setLastHint('✅ Topic completed!');
-    }
-  }, [remainingSeconds, activeId, planData]);
-
-  const startTimer = (taskIndex: number, minutes: number) => {
-    setActiveId(`${taskIndex}`);
-    setRemainingSeconds(minutes * 60);
-    setIsRunning(true);
-    setLastHint(null);
-  };
-
-  const pauseTimer = () => {
-    setIsRunning(false);
-    if (activeId && planData) {
-      const taskIndex = parseInt(activeId.split('-')[0]);
-      saveProgress(taskIndex, false);
-    }
-  };
-
-  const saveProgress = async (taskIndex: number, completed: boolean) => {
+  const saveProgress = useCallback(async (taskIndex: number, completed: boolean) => {
     if (!planData) return;
 
     try {
@@ -195,6 +144,57 @@ const StudyPlanView: React.FC = () => {
       
     } catch (error) {
       console.error('Failed to save progress:', error);
+    }
+  }, [planData]);
+
+  // Check screen size for responsive design
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    fetchPlan();
+  }, [fetchPlan]);
+
+  // Timer logic
+  useEffect(() => {
+    if (!isRunning || remainingSeconds <= 0) return;
+
+    const interval = setInterval(() => {
+      setRemainingSeconds((s) => Math.max(0, s - 1));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isRunning, remainingSeconds]);
+
+  useEffect(() => {
+    if (remainingSeconds === 0 && activeId && planData) {
+      setIsRunning(false);
+      const taskIndex = parseInt(activeId.split('-')[0]);
+      saveProgress(taskIndex, true);
+      setLastHint('✅ Topic completed!');
+    }
+  }, [remainingSeconds, activeId, planData, saveProgress]);
+
+  const startTimer = (taskIndex: number, minutes: number) => {
+    setActiveId(`${taskIndex}`);
+    setRemainingSeconds(minutes * 60);
+    setIsRunning(true);
+    setLastHint(null);
+  };
+
+  const pauseTimer = () => {
+    setIsRunning(false);
+    if (activeId && planData) {
+      const taskIndex = parseInt(activeId.split('-')[0]);
+      saveProgress(taskIndex, false);
     }
   };
 

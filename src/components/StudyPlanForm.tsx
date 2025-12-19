@@ -17,34 +17,6 @@ interface FormState {
   topics: TopicInput[];
 }
 
-interface PlanItem {
-  day: string;
-  course: string;
-  topic: string;
-  difficulty: Difficulty;
-  suggested_minutes: number;
-  ai_hint?: string;
-  part?: number | null;
-  break_after?: number | null;
-}
-
-interface AiMeta {
-  model: string;
-  summary: string;
-  tips: string[];
-  exam_date?: string;
-}
-
-interface PlanResponse {
-  message: string;
-  plan_id: string;
-  student_name: string;
-  exam_date: string;
-  daily_hours: string;
-  plan: PlanItem[];
-  ai?: AiMeta;
-}
-
 const StudyPlanForm: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormState>({

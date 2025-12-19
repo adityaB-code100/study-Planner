@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { API_BASE } from '../config';
@@ -96,27 +96,7 @@ const HomePage: React.FC = () => {
     }
   };
 
-  // Check screen size
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Fetch dashboard data
-  useEffect(() => {
-    fetchDashboardStats();
-    
-    // Play welcome sound
-    setTimeout(() => playSound('welcome', 0.3), 500);
-  }, []);
-
-  const fetchDashboardStats = async () => {
+  const fetchDashboardStats = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -171,7 +151,27 @@ const HomePage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
+
+  // Check screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Fetch dashboard data
+  useEffect(() => {
+    fetchDashboardStats();
+    
+    // Play welcome sound
+    setTimeout(() => playSound('welcome', 0.3), 500);
+  }, [fetchDashboardStats]);
 
   // Helper functions
   const getUserName = () => {
