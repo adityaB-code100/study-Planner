@@ -18,15 +18,9 @@ app = Flask(__name__, static_folder='build', static_url_path='')
 # Get secret key from environment variable (required for production)
 app.secret_key = os.getenv('SECRET_KEY', 'smart-study-planner-secret-key-2025-dev-only')
 
-# Get allowed origins from environment variable (comma-separated)
-allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
-
 # Configure CORS properly for production
-CORS(app, 
-     resources={r"/api/*": {"origins": allowed_origins}},
-     supports_credentials=True,
-     allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
+CORS(app, origins=allowed_origins, supports_credentials=True)
 
 # ===================== JSON ENCODER =====================
 class JSONEncoder(json.JSONEncoder):
@@ -699,27 +693,11 @@ def serve(path):
     return send_from_directory(app.static_folder, 'index.html')
 
 # ===================== RUN SERVER =====================
-if __name__ == "__main__":
-    # Get port from environment variable (Render sets PORT automatically)
+if __name__ == '__main__':
+    # Get port from environment variable (Render sets this automatically)
     port = int(os.getenv('PORT', 5000))
+    
     # Debug mode should be False in production
     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
     
-    print("=" * 60)
-    print("🚀 SMART STUDY PLANNER BACKEND")
-    print("=" * 60)
-    print(f"📊 Database: {'MongoDB ✅' if can_use_mongodb() else 'In-Memory ✅'}")
-    print(f"🔗 API URL: http://localhost:{port}")
-    print(f"🎯 Environment: {'Development' if debug_mode else 'Production'}")
-    print("=" * 60)
-    print("📋 Available Endpoints:")
-    print("  POST /api/register        - Register new user")
-    print("  POST /api/login           - Login user")
-    print("  POST /api/generate-plan   - Create study plan")
-    print("  GET  /api/dashboard       - User dashboard")
-    print("  GET  /api/plan/<id>       - Get specific plan")
-    print("  POST /api/update-progress - Update study progress")
-    print("  GET  /api/health          - Health check")
-    print("=" * 60)
-    
-    app.run(debug=debug_mode, port=port, host='0.0.0.0')
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)
