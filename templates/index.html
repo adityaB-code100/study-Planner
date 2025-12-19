@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10 col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title mb-3">Create Your Study Plan</h3>
+        <p class="text-muted small">
+          Add as many topics as you like and link each one to a course.
+          You can have multiple topics for the same course.
+        </p>
+
+        <form method="POST">
+          <!-- Student name -->
+          <div class="mb-3">
+            <label class="form-label">Student name</label>
+            <input
+              type="text"
+              name="student_name"
+              class="form-control"
+              placeholder="Elif"
+              required
+            />
+          </div>
+
+          <!-- Topics & difficulty (course + topic + difficulty) -->
+          <h5 class="mt-4">Topics & courses</h5>
+          <p class="text-muted small mb-2">
+            Each row = one topic. You can repeat the same course for multiple topics.
+          </p>
+
+          <div id="topics-container">
+            <!-- First row -->
+            <div class="row g-2 align-items-center mb-2 topic-row">
+              <div class="col-md-4">
+                <input
+                  type="text"
+                  name="course_1"
+                  class="form-control"
+                  placeholder="Course (e.g. Data Structures)"
+                  required
+                />
+              </div>
+              <div class="col-md-4">
+                <input
+                  type="text"
+                  name="topic_1"
+                  class="form-control"
+                  placeholder="Topic (e.g. Arrays)"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <select name="difficulty_1" class="form-select">
+                  <option value="easy">Easy</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+              <div class="col-md-1 text-end">
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm remove-topic"
+                  disabled
+                >
+                  &times;
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <button
+              type="button"
+              id="add-topic"
+              class="btn btn-outline-secondary btn-sm"
+            >
+              + Add topic
+            </button>
+          </div>
+
+          <!-- Exam date & hours -->
+          <div class="row mt-3">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Nearest exam date (YYYY-MM-DD)</label>
+              <input
+                type="text"
+                name="exam_date"
+                class="form-control"
+                placeholder="YYYY-MM-DD"
+                inputmode="numeric"
+                pattern="\d{4}-\d{2}-\d{2}"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Daily available study hours</label>
+              <input
+                type="number"
+                step="0.5"
+                min="0.5"
+                name="daily_hours"
+                class="form-control"
+                value="3"
+                required
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            Generate Plan
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JS for dynamic topic rows -->
+<script>
+  let topicCount = 1;
+  const container = document.getElementById("topics-container");
+  const addBtn = document.getElementById("add-topic");
+
+  addBtn.addEventListener("click", () => {
+    topicCount += 1;
+    const row = document.createElement("div");
+    row.className = "row g-2 align-items-center mb-2 topic-row";
+    row.innerHTML = `
+      <div class="col-md-4">
+        <input
+          type="text"
+          name="course_${topicCount}"
+          class="form-control"
+          placeholder="Course"
+          required
+        />
+      </div>
+      <div class="col-md-4">
+        <input
+          type="text"
+          name="topic_${topicCount}"
+          class="form-control"
+          placeholder="Topic"
+          required
+        />
+      </div>
+      <div class="col-md-3">
+        <select name="difficulty_${topicCount}" class="form-select">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+      <div class="col-md-1 text-end">
+        <button type="button" class="btn btn-outline-danger btn-sm remove-topic">
+          &times;
+        </button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+
+  container.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-topic")) {
+      const rows = container.querySelectorAll(".topic-row");
+      if (rows.length > 1) {
+        e.target.closest(".topic-row").remove();
+      }
+    }
+  });
+</script>
+{% endblock %}

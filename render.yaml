@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: smart-study-planner
+    env: python
+    buildCommand: |
+      npm install
+      npm run build
+      pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_DEBUG
+        value: False
+      - key: MONGODB_URI
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: PORT
+        fromService:
+          type: web
+          name: smart-study-planner
+          property: port
+

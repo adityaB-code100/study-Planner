@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title mb-3">Study Plan for {{ student_name }}</h3>
+
+        <p class="text-muted mb-3">
+          Nearest exam:
+          <strong>{{ exam_date }}</strong> ·
+          Daily study:
+          <strong>{{ daily_hours }} hours</strong> ·
+          Total topics:
+          <strong>{{ plan|length }}</strong>
+        </p>
+
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Day</th>
+              <th scope="col">Course</th>
+              <th scope="col">Topic</th>
+              <th scope="col">Difficulty</th>
+              <th scope="col">Suggested minutes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in plan %}
+              {% set badge_class = "secondary" %}
+              {% if item.difficulty == "easy" %}
+                {% set badge_class = "success" %}
+              {% elif item.difficulty == "medium" %}
+                {% set badge_class = "warning" %}
+              {% elif item.difficulty == "hard" %}
+                {% set badge_class = "danger" %}
+              {% endif %}
+
+              <tr>
+                <td>{{ item.day }}</td>
+                <td>{{ item.course }}</td>
+                <td>{{ item.topic }}</td>
+                <td>
+                  <span class="badge bg-{{ badge_class }} text-uppercase">
+                    {{ item.difficulty }}
+                  </span>
+                </td>
+                <td>
+                  <strong>{{ item.suggested_minutes }}</strong>
+                  <span class="text-muted small">min</span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+          Back
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,22 @@
+# Environment Variables Template for Smart Study Planner
+# Copy these variables to your Render dashboard under Environment tab
+
+# Flask Secret Key (generate a random string)
+SECRET_KEY=your-secret-key-here-change-this-in-production
+
+# Flask Debug Mode (set to False for production)
+FLASK_DEBUG=False
+
+# MongoDB Atlas Connection String
+# Format: mongodb+srv://username:password@cluster.mongodb.net/dbname?retryWrites=true&w=majority
+# Replace with your actual MongoDB Atlas connection string
+MONGODB_URI=mongodb+srv://testmailnanded21_db_user:ImzzsHViEaAmG7AM@cluster0.xxxxx.mongodb.net/study_planner?retryWrites=true&w=majority
+
+# CORS Allowed Origins
+# After first deployment, update this with your Render app URL
+# Example: https://smart-study-planner.onrender.com
+ALLOWED_ORIGINS=https://your-app-name.onrender.com
+
+# Port (Render sets this automatically, leave empty or don't set)
+PORT=
+
